@@ -1,19 +1,31 @@
 package com.yammer.metrics.reporting;
 
-import com.yammer.metrics.Metrics;
-import com.yammer.metrics.core.*;
-import com.yammer.metrics.stats.Snapshot;
-import com.yammer.metrics.core.MetricPredicate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.concurrent.TimeUnit;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.yammer.metrics.Metrics;
+import com.yammer.metrics.core.Counter;
+import com.yammer.metrics.core.Gauge;
+import com.yammer.metrics.core.Histogram;
+import com.yammer.metrics.core.Metered;
+import com.yammer.metrics.core.Metric;
+import com.yammer.metrics.core.MetricName;
+import com.yammer.metrics.core.MetricPredicate;
+import com.yammer.metrics.core.MetricProcessor;
+import com.yammer.metrics.core.MetricsRegistry;
+import com.yammer.metrics.core.Timer;
+import com.yammer.metrics.core.VirtualMachineMetrics;
+import com.yammer.metrics.stats.Snapshot;
 
 /**
  * A simple reporter which sends out application metrics to a <a href="http://ganglia.sourceforge.net/">Ganglia</a>
@@ -296,7 +308,7 @@ public class GangliaReporter extends AbstractPollingReporter implements MetricPr
         this.gangliaMessageBuilder.newMessage()
                 .addInt(128)// metric_id = metadata_msg
                 .addString(this.hostLabel)// hostname
-                .addString(metricName)// metric name
+                .addString(sanitizeGangliaName(metricName))// metric name
                 .addInt(1)// spoof = True
                 .addString(metricType)// metric type
                 .addString(metricName)// metric name
@@ -312,7 +324,7 @@ public class GangliaReporter extends AbstractPollingReporter implements MetricPr
         this.gangliaMessageBuilder.newMessage()
                 .addInt(133)// we are sending a string value
                 .addString(this.hostLabel)// hostLabel
-                .addString(metricName)// metric name
+                .addString(sanitizeGangliaName(metricName))// metric name
                 .addInt(1)// spoof = True
                 .addString("%s")// format field
                 .addString(metricValue) // metric value
@@ -451,6 +463,14 @@ public class GangliaReporter extends AbstractPollingReporter implements MetricPr
         } catch (UnknownHostException e) {
             LOG.error("Unable to get local gangliaHost name: ", e);
             return "unknown";
+        }
+    }
+    
+    protected String sanitizeGangliaName(String fullname) {
+        if (fullname == null) {
+            return "";
+        } else {
+            return fullname;
         }
     }
 

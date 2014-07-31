@@ -297,7 +297,7 @@ public class GangliaReporter extends AbstractPollingReporter implements MetricPr
                 .addInt(128)// metric_id = metadata_msg
                 .addString(this.hostLabel)// hostname
                 .addString(metricName)// metric name
-                .addInt(0)// spoof = True
+                .addInt(1)// spoof = True
                 .addString(metricType)// metric type
                 .addString(metricName)// metric name
                 .addString(units)// units
@@ -313,7 +313,7 @@ public class GangliaReporter extends AbstractPollingReporter implements MetricPr
                 .addInt(133)// we are sending a string value
                 .addString(this.hostLabel)// hostLabel
                 .addString(metricName)// metric name
-                .addInt(0)// spoof = True
+                .addInt(1)// spoof = True
                 .addString("%s")// format field
                 .addString(metricValue) // metric value
                 .send();
